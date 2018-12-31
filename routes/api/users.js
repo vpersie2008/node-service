@@ -1,11 +1,16 @@
 const express = require("express"); //引入express
 const router = express.Router(); //获取express中的路由
+
+
+const http = require("http");
 const HttpProxy = require("../../common/httpProxy");
+
+
 const customerService = new HttpProxy("CustomerService");
 const postService = new HttpProxy("PostsService");
 
 router.get("/test", (req, res) => {
-
+    
     customerService
         .GET("GetAllUsers")
         .then(data => {

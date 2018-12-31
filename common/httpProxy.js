@@ -1,21 +1,39 @@
-const http = require("http");
 const qs = require("querystring");
 const fetch = require("node-fetch");
-
 const restfulConfig = require("../configuration/restfulService");
-const headerPrams = {
-    "Content-Type": "application/json",
-    "CountryCode": "USA",
-    "CompanyCode": 1003,
-    "LanguageCode": "en-us",
-    "X-RegionCode": "USA",
-    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjMjIyYTA4ODRhYmUwMzdkY2I4MTdlNiIsIm5hbWUiOiJ3YW5nIHhpbmciLCJpYXQiOjE1NDYxNzI5MDQsImV4cCI6MTU0NjE3NjUwNH0.7m-ve0D9309L6vCxr8FUc-8gtw1pjSE6C_5Je7t_aIU"
-}
+const {getBizUnit} = require("./serviceContext");
 
 class HttpProxy {
 
     constructor(serviceName) {
         this.serviceName = serviceName;
+    }
+
+    get _bizUnit() {
+        return getBizUnit();
+    }
+
+    get _authorization() {
+        if (this._bizUnit && this._bizUnit.Authorization) {
+            return this._bizUnit.Authorization;
+        } else {
+            const resourceItem = restfulConfig.find(x => x.name === this.serviceName);
+            if (resourceItem) {
+                return resourceItem.authorization;
+            }
+        }
+        return "";
+    }
+
+    get _headersPrams() {
+        return {
+            "Content-Type": "application/json",
+            "CountryCode": this._bizUnit.CountryCode,
+            "CompanyCode": this._bizUnit.CompanyCode,
+            "LanguageCode": this._bizUnit.LanguageCode,
+            "X-RegionCode": this._bizUnit.RegionCode,
+            "Authorization": this._authorization
+        }
     }
 
     _getResourceByName(resourceName) {
@@ -38,17 +56,16 @@ class HttpProxy {
     }
 
     _httpRequest(url, method, requestBody) {
-        console.log("current url :::: " + url);
+        console.log("Start send http request to :: " + url);
         return new Promise((resolve, reject) => {
             fetch(url, {
-                method: method,
-                headers: headerPrams,
+                    method: method,
+                    headers: this._headersPrams,
                     body: JSON.stringify(requestBody)
                 })
                 .then(res => res.json())
                 .then(data => resolve(data))
                 .catch(err => reject(err));
-
         })
     }
 
@@ -57,8 +74,6 @@ class HttpProxy {
         const url = queryBody && typeof queryBody == "object"
             ? resourceRoute + "?" + qs.stringify(queryBody)
             : resourceRoute;
-
-        console.log("Current url is :" + url);
 
         return new Promise((resolve, reject) => {
             fetch(url)
@@ -83,9 +98,7 @@ class HttpProxy {
         return new Promise((resolve, reject) => {
             fetch(resourceRoute, {
                     method: "DELETE",
-                    headers: {
-                        "Content-Type": "application/json"
-                    }
+                    headers: _headersPrams
                 })
                 .then(res => res.json())
                 .then(data => resolve({success: true, msg: "Delete successfully!"}))
