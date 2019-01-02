@@ -47,7 +47,15 @@ class HttpProxy {
                     .find(y => y.name === resourceName)
                     .value;
                 if (host && resourcUri) {
-                    return `${host.trim("/")}/${resourcUri.trim("/")}`;
+                    const hostFormat = host.endsWith("/")
+                        ? host.substr(0, host.lastIndexOf("/"))
+                        : host;
+
+                    const resourceUriFormat = resourcUri.startsWith("/")
+                        ? resourcUri.substring(resourcUri.indexOf("/") + 1)
+                        : resourcUri;
+
+                    return `${hostFormat}/${resourceUriFormat}`;
                 }
             }
         }
@@ -69,14 +77,33 @@ class HttpProxy {
         })
     }
 
-    GET(resourceName, queryBody) {
-        const resourceRoute = this._getResourceByName(resourceName);
-        const url = queryBody && typeof queryBody == "object"
-            ? resourceRoute + "?" + qs.stringify(queryBody)
+    _getHttpUrl(resourceName, routePrams = [], requestBody = {}) {
+        let resourceRoute = this._getResourceByName(resourceName);
+
+        if (resourceRoute) {
+            if (routePrams && Array.isArray(routePrams) && routePrams.length > 0) {
+                routePrams.forEach(pram => {
+                    resourceRoute = resourceRoute
+                        .toLowerCase()
+                        .replace(`{${pram.key.toLowerCase()}}`, pram.value.toLowerCase())
+                })
+            }
+        }
+
+        return requestBody && JSON.stringify(requestBody) != "{}"
+            ? resourceRoute + "?" + qs.stringify(requestBody)
             : resourceRoute;
+    }
+
+    GET(resourceName, routePrams = [], requestBody = {}) {
+
+        const url = this._getHttpUrl(resourceName, routePrams, requestBody);
 
         return new Promise((resolve, reject) => {
-            fetch(url)
+            fetch(url, {
+                    method: "GET",
+                    headers: this._headersPrams
+                })
                 .then(res => res.json())
                 .then(data => resolve(data))
                 .catch(err => reject(err));
@@ -92,18 +119,16 @@ class HttpProxy {
         return this._httpRequest(this._getResourceByName(resourceName), "PUT", requestBody);
     }
 
-    DELETE(resourceName, queryBody) {
-        const resourceRoute = this._getResourceByName(resourceName);
-
+    DELETE(resourceName, routePrams = [], requestBody = {}) {
+        const url = this._getHttpUrl(resourceName, routePrams, requestBody);
         return new Promise((resolve, reject) => {
-            fetch(resourceRoute, {
+            fetch(url, {
                     method: "DELETE",
                     headers: _headersPrams
                 })
                 .then(res => res.json())
-                .then(data => resolve({success: true, msg: "Delete successfully!"}))
+                .then(data => resolve(data))
                 .catch(err => reject(err));
-
         });
     }
 }

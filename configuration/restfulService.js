@@ -5,10 +5,10 @@ module.exports = [
         resources: [
             {
                 name: "GetAllUsers",
-                value: "api/users/users"
+                value: "/api/users/users"
             }, {
                 name: "GetPostDataById",
-                value: "/api/posts/:id"
+                value: "/api/posts/{id}"
             }
         ]
     },

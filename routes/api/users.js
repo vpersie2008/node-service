@@ -8,9 +8,17 @@ const postService = new HttpProxy("PostsService");
 router.get("/test", (req, res) => {
 
     logger.error("Test by jerry1111111 info");
-    
+
     customerService
-        .GET("GetAllUsers")
+        .GET("GetPostDataById")
+        .then(data => {
+            res.json(data);
+        });
+})
+
+router.get("/posts/:id", (req, res) => {
+    customerService
+        .GET("GetPostDataById", [{ key:"id",value: req.params.id}])
         .then(data => {
             res.json(data);
         });
