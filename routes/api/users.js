@@ -7,10 +7,10 @@ const postService = new HttpProxy("PostsService");
 
 router.get("/test", (req, res) => {
 
-    logger.error("Test by jerry1111111 info");
+    //logger.error("Test by jerry1111111 info");
 
     customerService
-        .GET("GetPostDataById")
+        .GET("GetAllUsers")
         .then(data => {
             res.json(data);
         });

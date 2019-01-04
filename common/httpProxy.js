@@ -98,7 +98,7 @@ class HttpProxy {
     GET(resourceName, routePrams = [], requestBody = {}) {
 
         const url = this._getHttpUrl(resourceName, routePrams, requestBody);
-
+        //Promise 对象，其中上一个then返回的对象，会传递给下一个then作为入参传入
         return new Promise((resolve, reject) => {
             fetch(url, {
                     method: "GET",
