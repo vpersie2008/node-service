@@ -11,11 +11,13 @@
   "author": "Jerry.X.Wang",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^3.0.2",
     "body-parser": "^1.18.3",
     "express": "^4.16.4",
     "log4js": "^3.0.6",
     "mongoose": "^5.4.1",
     "node-fetch": "^2.3.0",
-    "nodemon": "^1.18.9"
+    "nodemon": "^1.18.9",
+    "validator": "^10.10.0"
   }
 }
