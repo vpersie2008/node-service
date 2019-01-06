@@ -4,11 +4,10 @@ const logger = require("../../common/logHelpper");
 const HttpProxy = require("../../common/httpProxy");
 const customerService = new HttpProxy("CustomerService");
 const postService = new HttpProxy("PostsService");
+const Customer = require("../../infrastructure/customer/customer");
+const CustomerFacade = new Customer();
 
 router.get("/test", (req, res) => {
-
-    //logger.error("Test by jerry1111111 info");
-
     customerService
         .GET("GetAllUsers")
         .then(data => {
@@ -18,7 +17,12 @@ router.get("/test", (req, res) => {
 
 router.get("/posts/:id", (req, res) => {
     customerService
-        .GET("GetPostDataById", [{ key:"id",value: req.params.id}])
+        .GET("GetPostDataById", [
+        {
+            key: "id",
+            value: req.params.id
+        }
+    ])
         .then(data => {
             res.json(data);
         });
@@ -33,6 +37,17 @@ router.post("/posts", (req, res) => {
         .catch(err => {
             res.json({success: false, msg: `添加失败 ${err}`})
         })
+})
+
+router.post("/register", (req, res) => {
+    CustomerFacade
+        .register(req.body)
+        .then((response) => {
+            res.json(response);
+        }).catch((err)=>{
+            logger.error(`Register failed, Error : ${err}`);
+            res.json(response);
+        });
 })
 
 module.exports = router;
