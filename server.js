@@ -45,4 +45,5 @@ app.use(`/${baseRoutes.version}/api/`,express.static("./common/swagger-ui/"));
 const port = process.env.PORT || 3000
 app.listen(port, () => {
     console.log(`Server is running at ${port}`);
+    console.log(`Swagger doc is: http://localhost:${port}/${baseRoutes.version}/api/`);
 });
