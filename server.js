@@ -34,12 +34,15 @@ app.use((req, res, next) => {
     res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
     next();
 });
+
+//设置passport用于生成token
 app.use(passport.initialize());
 require("./infrastructure/utility/passport")(passport);
 
-baseRoutes.forEach(route => app.use(route.baseApi, route.controller))
+baseRoutes.resources.forEach(resource => app.use(resource.baseApi, resource.controller));
+app.use(`/${baseRoutes.version}/api/`,express.static("./common/swagger-ui/"));
 
 const port = process.env.PORT || 3000
 app.listen(port, () => {
     console.log(`Server is running at ${port}`);
-})
+});
