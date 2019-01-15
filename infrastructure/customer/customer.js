@@ -61,6 +61,15 @@ class CustomerFacade {
         return response;
 
     }
+
+    async getCustomerByLoginName(loginName) {
+        let customer = await CustomerDAL.getCustomerByLoginName(loginName);
+        if (!customer) {
+            return {message: "该用户不存在", status: false, code: 100000};
+        }
+
+        return customer;
+    }
 }
 
 module.exports = new CustomerFacade();

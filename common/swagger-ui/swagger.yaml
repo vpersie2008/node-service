@@ -67,12 +67,61 @@ paths:
           description: "successful operation"
           schema:
             $ref: "#/definitions/LoginResponse"
+  /api/users/{loginName}:
+    get:
+      tags:
+      - "Customer"
+      summary: "Get customer login info"
+      description: "Get customer info by login name"
+      operationId: "getUserByName"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "loginName"
+        in: "path"
+        description: "The name that needs to be fetched. Use user1 for testing. "
+        required: true
+        type: string
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Customer"
 securityDefinitions:
   api_key:
     type: apiKey
     name: api_key
     in: header
 definitions:
+  Customer:
+    type: object
+    properties:
+      loginName:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+      email:
+        type: string
+      password:
+        type: string
+      avatar:
+        type: string
+      editUser:
+        type: string
+      countryCode:
+        type: string
+      companyCode:
+        type: integer
+        default: 1003
+      languageCode:
+        type: string
+      inDate:
+        type: string
+      editDate:
+        type: string
   RegisterRequest:
     type: object
     properties:
@@ -116,4 +165,3 @@ definitions:
         type: boolean
       message:
         type: string
-

@@ -74,5 +74,14 @@ router.post("/current", jwtAuth.JwtAuth(), (req, res) => {
 
 });
 
+router.get("/:loginName",jwtAuth.JwtAuth(),(req,res)=>{
+    CustomerFacade.getCustomerByLoginName(req.params.loginName).then(response=>{
+        res.json(response);
+    }).catch(err=>{
+        logger.error(`Get customer data by login name failed`);
+        res.json(response);
+    })
+})
+
 
 module.exports = router;
