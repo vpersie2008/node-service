@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const db = require('./configuration/dataBase');
+const environment = require("./configuration/environment");
 const baseRoutes = require('./routes/roures');
 const serviceContext = require("./common/serviceContext");
 const passport = require("passport");
@@ -43,7 +44,8 @@ baseRoutes.resources.forEach(resource => app.use(resource.baseApi, resource.cont
 app.use(`/${baseRoutes.version}/api/`,express.static("./common/swagger-ui/"));
 
 const port = process.env.PORT || 3000
+
 app.listen(port, () => {
     console.log(`Server is running at ${port}`);
-    console.log(`Swagger doc is: http://localhost:${port}/${baseRoutes.version}/api/`);
+    console.log(`Swagger doc is: ${environment.host}/${baseRoutes.version}/api/`);
 });
