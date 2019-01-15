@@ -3,7 +3,6 @@ info:
   description: This is an Node-service
   version: 1.0.0
   title: Swagger Node-service
-  termsOfService: 'http://swagger.io/terms/'
   contact:
     email: Jerry.x.wang@newegg.com
   license:
@@ -25,6 +24,9 @@ paths:
       summary: Register new user
       description: Register new user
       operationId: CustomerRegister
+      consumes:
+      - "application/json"
+      - "application/xml"
       produces:
         - application/xml
         - application/json      
@@ -34,10 +36,12 @@ paths:
           description: Create customer operation
           required: true
           schema:
-            $ref: '#/definitions/Customer'
+            $ref: '#/definitions/RegisterRequest'
       responses:
-        default:
-          description: successful operation
+        200:
+          description: "successful operation"
+          schema:
+            $ref: '#/definitions/ServiceResponse'
   /api/users/login:
     post:
       tags:
@@ -45,9 +49,12 @@ paths:
       summary: Login a customer
       description: Login user
       operationId: CustomerLogin
+      consumes:
+      - "application/json"
+      - "application/xml"
       produces:
         - application/xml
-        - application/json      
+        - application/json
       parameters: 
         - in: body
           name: body
@@ -56,26 +63,19 @@ paths:
           schema:
             $ref: '#/definitions/LoginRequest'
       responses:
-        default:
-          description: successful operation          
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/LoginResponse"
 securityDefinitions:
-  petstore_auth:
-    type: oauth2
-    authorizationUrl: 'http://petstore.swagger.io/oauth/dialog'
-    flow: implicit
-    scopes:
-      'write:pets': modify pets in your account
-      'read:pets': read your pets
   api_key:
     type: apiKey
     name: api_key
     in: header
 definitions:
-  Customer:
+  RegisterRequest:
     type: object
     properties:
-      id:
-        type: string
       loginName:
         type: string
       name:
@@ -88,18 +88,7 @@ definitions:
         type: string
       avatar:
         type: string
-      inDate:
-        type: string  
-      editDate:
-        type: string
       editUser:
-        type: string
-      companyCode:
-        type: integer
-        format: int32
-      countryCode:
-        type: string
-      languageCode:
         type: string
   LoginRequest: 
     type: object
@@ -108,7 +97,16 @@ definitions:
         type: string
       password:
         type: string
-  ApiResponse:
+  LoginResponse: 
+    type: object
+    properties:
+      message:
+        type: string
+      status:
+        type: string
+      token:
+        type: string
+  ServiceResponse:
     type: object
     properties:
       code:
@@ -118,6 +116,4 @@ definitions:
         type: boolean
       message:
         type: string
-externalDocs:
-  description: Find out more about Swagger
-  url: 'http://swagger.io'
+
