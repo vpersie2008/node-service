@@ -1,5 +1,5 @@
-const express = require("express"); //引入express
-const router = express.Router(); //获取express中的路由
+const express = require("express");
+const router = express.Router();
 const logger = require("../../common/logHelpper");
 const HttpProxy = require("../../common/httpProxy");
 const customerService = new HttpProxy("CustomerService");
@@ -18,11 +18,11 @@ router.get("/test", (req, res) => {
 router.get("/posts/:id", (req, res) => {
     customerService
         .GET("GetPostDataById", [
-        {
-            key: "id",
-            value: req.params.id
-        }
-    ])
+            {
+                key: "id",
+                value: req.params.id
+            }
+        ])
         .then(data => {
             res.json(data);
         });
@@ -32,10 +32,10 @@ router.post("/posts", (req, res) => {
     postService
         .POST("Posts", req.body)
         .then((data) => {
-            res.json({success: true, msg: "添加评论成功"});
+            res.json({ success: true, msg: "Add review success." });
         })
         .catch(err => {
-            res.json({success: false, msg: `添加失败 ${err}`})
+            res.json({ success: false, msg: `Add review failed. ${err}` })
         })
 })
 
@@ -44,7 +44,7 @@ router.post("/register", (req, res) => {
         .register(req.body)
         .then((response) => {
             res.json(response);
-        }).catch((err)=>{
+        }).catch((err) => {
             logger.error(`Register failed, Error : ${err}`);
             res.json(response);
         });
@@ -54,7 +54,7 @@ router.post("/login", (req, res) => {
     CustomerFacade.login(req.body)
         .then((response) => {
             res.json(response);
-        }).catch((err)=>{
+        }).catch((err) => {
             logger.error(`Login failed, Error : ${err}`);
             res.json(response);
         });
@@ -70,18 +70,17 @@ router.post("/current", jwtAuth.JwtAuth(), (req, res) => {
 
     console.log("The request form login data is ::" + JSON.stringify(req.user));
 
-    return res.json({"success":true});
+    return res.json({ "success": true });
 
 });
 
-router.get("/:loginName",jwtAuth.JwtAuth(),(req,res)=>{
-    CustomerFacade.getCustomerByLoginName(req.params.loginName).then(response=>{
+router.get("/:loginName", jwtAuth.JwtAuth(), (req, res) => {
+    CustomerFacade.getCustomerByLoginName(req.params.loginName).then(response => {
         res.json(response);
-    }).catch(err=>{
-        logger.error(`Get customer data by login name failed`);
+    }).catch(err => {
+        logger.error(`Get customer data by login name failed.`);
         res.json(response);
     })
 })
-
 
 module.exports = router;

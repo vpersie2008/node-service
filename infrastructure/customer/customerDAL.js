@@ -4,7 +4,7 @@ class CustomerDAL {
     async updateCustomer(customer) {
 
         if (!customer) {
-            return {success: false, message: "Customer is empty"}
+            return { success: false, message: "Customer is empty" }
         }
 
         const currentCustomer = new Customer({
@@ -26,11 +26,11 @@ class CustomerDAL {
             .save()
             .then(user => {
                 console.log("start save customer , user is :: " + user);
-                return {success: true, message: ""};
+                return { success: true, message: "" };
             })
             .catch(err => {
                 console.log("failed save customer , user is :: " + user);
-                return {success: false, message: `Save customer failed, error : ${err}`};
+                return { success: false, message: `Save customer failed, error : ${err}` };
             });
     };
 
@@ -42,7 +42,7 @@ class CustomerDAL {
         }
 
         const isExist = await Customer
-            .findOne({loginName: loginName})
+            .findOne({ loginName: loginName })
             .then((customer) => {
                 console.log("customer is :: " + customer);
                 if (customer) {
@@ -52,23 +52,20 @@ class CustomerDAL {
                 }
             });
 
-        console.log("customerIsExist :: " + isExist)
-
         return isExist;
     }
 
     async getCustomerByLoginName(loginName) {
         return await Customer
-            .findOne({loginName: loginName})
+            .findOne({ loginName: loginName })
             .then(customer => {
                 return Object.assign(customer, {
                     suatus: true,
                     message: "Get customer info success."
                 });
-
             })
             .catch(err => {
-                return {status: false, message: `Get customer failed, error : ${err}`}
+                return { status: false, message: `Get customer failed, error : ${err}` }
             });
     }
 }

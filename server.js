@@ -8,26 +8,26 @@ const serviceContext = require("./common/serviceContext");
 const passport = require("passport");
 const app = express();
 
-//连接mongodb
+//Connect to mongodb
 mongoose
     .connect(db.mongoURI)
     .then(() => console.log(`Mongodb connected to ${db.mongoURI}`))
     .catch(err => console.log(err));
 
-//使用body-parser parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({extended: false}));
+//body-parser parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }));
 //parse application/json
 app.use(bodyParser.json());
 
-//使用中间件，来允许跨域
+//Use middleware for allow CORS
 app.use((req, res, next) => {
-    let {setBizUnit} = serviceContext;
+    let { setBizUnit } = serviceContext;
     setBizUnit({
         CountryCode: req.header("CountryCode"),
         CompanyCode: 1003,
         LanguageCode: req.header("LanguageCode"),
         RegionCode: req.header("X-RegionCode"),
-        Authorization:req.header("Authorization")
+        Authorization: req.header("Authorization")
     });
 
     res.header("Access-Control-Allow-Origin", "*");
@@ -36,12 +36,13 @@ app.use((req, res, next) => {
     next();
 });
 
-//设置passport用于生成token
+//Set passport to create token
 app.use(passport.initialize());
 require("./infrastructure/utility/passport")(passport);
 
+//Use swagger to show api doc.
 baseRoutes.resources.forEach(resource => app.use(resource.baseApi, resource.controller));
-app.use(`/${baseRoutes.version}/api/`,express.static("./common/swagger-ui/"));
+app.use(`/${baseRoutes.version}/api/`, express.static("./common/swagger-ui/"));
 
 const port = process.env.PORT || 3000
 

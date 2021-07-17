@@ -8,24 +8,24 @@ class CustomerFacade {
 
     async register(request) {
         let response = {
-            message: "注册失败",
+            message: "Register failed!",
             status: false
         };
 
         const validateResult = validator.validateRegister(request);
         if (!validateResult.status) {
-            return {message: validateResult.message, status: false};
+            return { message: validateResult.message, status: false };
         }
 
         let isExist = await CustomerDAL.customerIsExist(request.loginName);
         if (isExist) {
-            return {message: "该用户已被注册！", status: true};
+            return { message: "The user has been registered!", status: true };
         }
 
         request.password = await bcrypt.hashSync(request.password, 10);
         const updateResult = await CustomerDAL.updateCustomer(request);
         if (updateResult.success) {
-            return {message: "注册成功！", status: true};
+            return { message: "Register successfully!", status: true };
         }
 
         return response;
@@ -34,18 +34,18 @@ class CustomerFacade {
 
     async login(request) {
         let response = {
-            message: "登录失败",
+            message: "Login failed!",
             status: false
         };
 
         const validateResult = await validator.validateLogin(request);
         if (!validateResult.status) {
-            return {message: validateResult.message, status: false};
+            return { message: validateResult.message, status: false };
         }
 
         let customer = await CustomerDAL.getCustomerByLoginName(request.loginName);
         if (!customer) {
-            return {message: "该用户不存在", status: false};
+            return { message: "This customer does not exist.", status: false };
         }
 
         const isMatch = await bcrypt.compareSync(request.password, customer.password);
@@ -53,9 +53,9 @@ class CustomerFacade {
             const jwtToken = jwt.sign({
                 id: customer.id,
                 loginName: customer.loginName
-            }, bizConfig.passport.secretOrKey, {expiresIn: bizConfig.passport.expiresIn});
+            }, bizConfig.passport.secretOrKey, { expiresIn: bizConfig.passport.expiresIn });
 
-            return {message: "登录成功", status: false, token: `${bizConfig.passport.bearer}${jwtToken}`};
+            return { message: "Login successfully!", status: false, token: `${bizConfig.passport.bearer}${jwtToken}` };
         }
 
         return response;
@@ -65,7 +65,7 @@ class CustomerFacade {
     async getCustomerByLoginName(loginName) {
         let customer = await CustomerDAL.getCustomerByLoginName(loginName);
         if (!customer) {
-            return {message: "该用户不存在", status: false, code: 100000};
+            return { message: "This customer does not exist.", status: false, code: 100000 };
         }
 
         return customer;
